@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f5f5f5;
+}
+
+#modelos, #carrito {
+    background-color: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.modelo {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.modelo:last-child {
+    border-bottom: none;
+}
+
+.modelo h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.modelo p {
+    margin: 4px 0;
+    color: #555;
+}
+
+.modelo button {
+    padding: 6px 12px;
+    background-color: #0077cc;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.modelo button:hover:not(:disabled) {
+    background-color: #005fa3;
+}
+
+.modelo button:disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
+}
+
+#carrito p {
+    margin: 6px 0;
+    font-weight: bold;
+}
+#vaciarCarritoBtn {
+    padding: 8px 15px;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#vaciarCarritoBtn:hover {
+    background-color: #990000;
+}
