@@ -10,7 +10,6 @@ const modelosDiv = document.getElementById("modelos");
 const carritoDiv = document.getElementById("carrito");
 const vaciarBtn = document.getElementById("vaciarCarritoBtn");
 
-
 function mostrarModelos() {
     modelosDiv.innerHTML = "";
 
@@ -35,7 +34,6 @@ function mostrarModelos() {
     });
 }
 
-
 function mostrarCarrito() {
     carritoDiv.innerHTML = "";
 
@@ -44,20 +42,21 @@ function mostrarCarrito() {
         return;
     }
 
-    carrito.forEach(item => {
+    carrito.forEach((item, index) => {
         const div = document.createElement("div");
-        div.innerHTML = `<p><strong>${item.nombre}</strong> - $${item.precio}
-        </p>`;
-        // <button class="eliminarBtn" > Eliminar </button>
+        div.innerHTML = `
+            <p><strong>${item.nombre}</strong> - $${item.precio}</p>
+            <button class="eliminarBtn">Eliminar</button>
+        `;
+
+        const eliminarBtn = div.querySelector(".eliminarBtn");
+        eliminarBtn.addEventListener("click", () => {
+            eliminarDelCarrito(index);
+        });
+
         carritoDiv.appendChild(div);
-        const eliminarProducto = div.querySelector("eliminarBtn"); 
-        eliminarProducto.addEventListener("click", () => 
-            {eliminarDelCarrito(index)
-})
-carritoDiv.appendChild(div)
     });
 }
-
 
 function agregarAlCarrito(producto) {
     carrito.push(producto);
@@ -65,10 +64,10 @@ function agregarAlCarrito(producto) {
     mostrarCarrito();
 }
 
-function eliminarDelCarrito (indice){ 
-    carrito.splice(indice,1);
-    mostrarCarrito()
-
+function eliminarDelCarrito(indice) {
+    carrito.splice(indice, 1);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    mostrarCarrito();
 }
 
 // Vaciar el carrito y actualizar localStorage
@@ -85,8 +84,7 @@ mostrarCarrito();
 
 
 
-
-
+// Código backend Express que tenías (sin cambios)
 const express = require('express');
 const app = express();
 const PORT = 3000;
