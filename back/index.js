@@ -4,7 +4,7 @@ const zapatillas = [
     { nombre: "Slip-On", precio: 55000, talles: [37, 38], stock: false }
 ];
 
-const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
 const modelosDiv = document.getElementById("modelos");
 const carritoDiv = document.getElementById("carrito");
