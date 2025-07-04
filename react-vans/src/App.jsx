@@ -14,13 +14,17 @@ function App() {
     return guardado ? JSON.parse(guardado) : [];
   });
 
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [pago, setPago] = useState("");
+
   useEffect(() => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
   const agregarAlCarrito = (producto) => {
     setCarrito([...carrito, producto]);
-
     Swal.fire({
       title: "Agregado al carrito",
       text: `${producto.nombre} fue agregado correctamente.`,
@@ -48,15 +52,58 @@ function App() {
   const vaciarCarrito = () => {
     Swal.fire({
       title: "¿Vaciar carrito?",
-      text: "Esta acción eliminará todos los productos.",
+      text: "Esto eliminará todos los productos.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, vaciar",
-      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
         setCarrito([]);
         Swal.fire("Carrito vacío", "", "success");
+      }
+    });
+  };
+
+  const finalizarCompra = () => {
+    if (!nombre || !email || !direccion || !pago) {
+      Swal.fire("Faltan datos", "Completá todos los campos antes de continuar", "error");
+      return;
+    }
+
+    if (carrito.length === 0) {
+      Swal.fire("Carrito vacío", "Agregá al menos un producto", "info");
+      return;
+    }
+
+    const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
+
+    Swal.fire({
+      title: "¿Confirmar compra?",
+      html: `
+        <p><strong>Nombre:</strong> ${nombre}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Dirección:</strong> ${direccion}</p>
+        <p><strong>Método de pago:</strong> ${pago}</p>
+        <p><strong>Total:</strong> $${total}</p>
+      `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setCarrito([]);
+        setNombre("");
+        setEmail("");
+        setDireccion("");
+        setPago("");
+
+        localStorage.removeItem("carrito");
+
+        Swal.fire({
+          title: "¡Compra realizada!",
+          text: "Gracias por tu compra. Te llegará un email con la información.",
+          icon: "success",
+        });
       }
     });
   };
@@ -109,14 +156,11 @@ function App() {
                 alignItems: "center",
               }}
             >
-              <span>
-                <strong>{item.nombre}</strong> - ${item.precio}
-              </span>
+              <span><strong>{item.nombre}</strong> - ${item.precio}</span>
               <button onClick={() => eliminarDelCarrito(i)}>Eliminar</button>
             </div>
           ))
         )}
-
         {carrito.length > 0 && (
           <button
             onClick={vaciarCarrito}
@@ -132,6 +176,54 @@ function App() {
             Vaciar carrito
           </button>
         )}
+      </section>
+
+      <section style={{ marginTop: 30 }}>
+        <h2>Finalizar compra</h2>
+        <input
+          type="text"
+          placeholder="Nombre completo"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: 10 }}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: 10 }}
+        />
+        <input
+          type="text"
+          placeholder="Dirección de envío"
+          value={direccion}
+          onChange={(e) => setDireccion(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: 10 }}
+        />
+        <select
+          value={pago}
+          onChange={(e) => setPago(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: 10 }}
+        >
+          <option value="">Seleccionar método de pago</option>
+          <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+          <option value="Transferencia">Transferencia</option>
+          <option value="Efectivo">Efectivo</option>
+        </select>
+        <button
+          onClick={finalizarCompra}
+          style={{
+            backgroundColor: "green",
+            color: "white",
+            padding: "10px 16px",
+            border: "none",
+            cursor: "pointer",
+            width: "100%",
+          }}
+        >
+          Finalizar compra
+        </button>
       </section>
     </div>
   );
