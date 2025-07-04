@@ -1,0 +1,5 @@
+[
+  { "nombre": "Old Skool", "precio": 60000, "talles": [38, 39, 40], "stock": true },
+  { "nombre": "Sk8-Hi", "precio": 70000, "talles": [40, 41], "stock": true },
+  { "nombre": "Slip-On", "precio": 55000, "talles": [37, 38], "stock": false }
+]

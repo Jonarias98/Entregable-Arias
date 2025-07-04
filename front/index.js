@@ -1,8 +1,4 @@
-const zapatillas = [
-    { nombre: "Old Skool", precio: 60000, talles: [38, 39, 40], stock: true },
-    { nombre: "Sk8-Hi", precio: 70000, talles: [40, 41], stock: true },
-    { nombre: "Slip-On", precio: 55000, talles: [37, 38], stock: false }
-];
+import { obtenerProductos } from './productos.js'; 
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -10,89 +6,120 @@ const modelosDiv = document.getElementById("modelos");
 const carritoDiv = document.getElementById("carrito");
 const vaciarBtn = document.getElementById("vaciarCarritoBtn");
 
-function mostrarModelos() {
-    modelosDiv.innerHTML = "";
+async function mostrarModelos() {
+  const zapatillas = await obtenerProductos();
+  modelosDiv.innerHTML = "";
 
-    zapatillas.forEach((zapatilla, i) => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <p><strong>${zapatilla.nombre}</strong></p>
-            <p>Precio: $${zapatilla.precio}</p>
-            <p>Talles: ${zapatilla.talles.join(", ")}</p>
-            <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-            <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}">Agregar al carrito</button>
-        `;
-        modelosDiv.appendChild(div);
-    });
+  zapatillas.forEach((zapatilla, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <p><strong>${zapatilla.nombre}</strong></p>
+      <p>Precio: $${zapatilla.precio}</p>
+      <p>Talles: ${zapatilla.talles.join(", ")}</p>
+      <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
+      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}">Agregar al carrito</button>
+    `;
+    modelosDiv.appendChild(div);
+  });
 
-    const botones = modelosDiv.querySelectorAll("button");
-    botones.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const index = btn.getAttribute("data-index");
-            agregarAlCarrito(zapatillas[index]);
-        });
+  const botones = modelosDiv.querySelectorAll("button");
+  botones.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const index = btn.getAttribute("data-index");
+      const productos = await obtenerProductos();
+      agregarAlCarrito(productos[index]);
     });
+  });
 }
 
 function mostrarCarrito() {
-    carritoDiv.innerHTML = "";
+  carritoDiv.innerHTML = "";
 
-    if (carrito.length === 0) {
-        carritoDiv.innerHTML = "<p>El carrito está vacío.</p>";
-        return;
-    }
+  if (carrito.length === 0) {
+    carritoDiv.innerHTML = "<p>El carrito está vacío.</p>";
+    return;
+  }
 
-    carrito.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <p><strong>${item.nombre}</strong> - $${item.precio}</p>
-            <button class="eliminarBtn">Eliminar</button>
-        `;
+  carrito.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <p><strong>${item.nombre}</strong> - $${item.precio}</p>
+      <button class="eliminarBtn">Eliminar</button>
+    `;
 
-        const eliminarBtn = div.querySelector(".eliminarBtn");
-        eliminarBtn.addEventListener("click", () => {
-            eliminarDelCarrito(index);
-        });
-
-        carritoDiv.appendChild(div);
+    const eliminarBtn = div.querySelector(".eliminarBtn");
+    eliminarBtn.addEventListener("click", () => {
+      eliminarDelCarrito(index);
     });
+
+    carritoDiv.appendChild(div);
+  });
+
+  if (carrito.length > 0) {
+    const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
+
+    const totalDiv = document.createElement("div");
+    totalDiv.innerHTML = `<p><strong>Total:</strong> $${total}</p>
+      <button id="comprarBtn">COMPRAR</button>`;
+    carritoDiv.appendChild(totalDiv);
+
+    document.getElementById("comprarBtn").addEventListener("click", () => {
+      Swal.fire({
+        title: "¿Confirmar compra?",
+        text: `Total a pagar: $${total}`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Comprar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          carrito = [];
+          localStorage.removeItem("carrito");
+          mostrarCarrito();
+          Swal.fire("¡Gracias por tu compra!", "Te llegará un email con el detalle", "success");
+        }
+      });
+    });
+  }
 }
 
 function agregarAlCarrito(producto) {
-    carrito.push(producto);
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    mostrarCarrito();
+  carrito.push(producto);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  mostrarCarrito();
+
+  Swal.fire({
+    title: "Agregado al carrito",
+    text: `${producto.nombre} fue agregado correctamente.`,
+    icon: "success",
+    timer: 1500,
+    showConfirmButton: false,
+  });
 }
 
 function eliminarDelCarrito(indice) {
-    carrito.splice(indice, 1);
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-    mostrarCarrito();
+  carrito.splice(indice, 1);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  mostrarCarrito();
 }
 
-// Vaciar el carrito y actualizar localStorage
 function vaciarCarrito() {
-    carrito = [];
-    localStorage.removeItem("carrito");
-    mostrarCarrito();
+  Swal.fire({
+    title: "¿Vaciar carrito?",
+    text: "Se eliminarán todos los productos del carrito",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, vaciar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      carrito = [];
+      localStorage.removeItem("carrito");
+      mostrarCarrito();
+      Swal.fire("Carrito vacío", "", "success");
+    }
+  });
 }
 
 vaciarBtn.addEventListener("click", vaciarCarrito);
 
 mostrarModelos();
 mostrarCarrito();
-
-
-
-// Código backend Express que tenías (sin cambios)
-const express = require('express');
-const app = express();
-const PORT = 3000;
-
-app.get('/', (req, res) => {
-  res.send('¡Hola desde el servidor!');
-});
-
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
