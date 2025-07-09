@@ -1,5 +1,5 @@
 [
-  { "nombre": "Old Skool", "precio": 60000, "talles": [38, 39, 40], "stock": true,"imagen" : "old-skool.jpg" },
+  { "nombre": "Old Skool", "precio": 60000, "talles": [38, 39, 40], "stock": true,"imagen": "old-skool.jpg" },
   { "nombre": "Sk8-Hi", "precio": 70000, "talles": [40, 41], "stock": true, "imagen" : "sk8-hi.jpg" },
   { "nombre": "Knu Skool", "precio": 85000, "talles": [37, 38, 39, 40], "stock": true, "imagen" : "knu-skool.jpg" },
   { "nombre": "U Authentic", "precio": 55000, "talles": [37, 38], "stock": true, "imagen" : "u-authentic.jpg" },
