@@ -1,4 +1,4 @@
-import { obtenerProductos } from './productos.js'; 
+import { obtenerProductos } from './productos.js';
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -69,17 +69,46 @@ function mostrarCarrito() {
         text: `Total a pagar: $${total}`,
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: "Comprar",
+        confirmButtonText: "Continuar",
       }).then((result) => {
         if (result.isConfirmed) {
-          carrito = [];
-          localStorage.removeItem("carrito");
-          mostrarCarrito();
-          Swal.fire("¡Gracias por tu compra!", "Te llegará un email con el detalle", "success");
+          mostrarFormularioCompra();
         }
       });
     });
   }
+}
+
+function mostrarFormularioCompra() {
+  carritoDiv.innerHTML = `
+    <h3>Datos del comprador</h3>
+    <form id="formCompra">
+      <label>Nombre y apellido:<br>
+        <input type="text" name="nombre" placeholder="Ingresá tu nombre y apellido" required />
+      </label><br><br>
+
+      <label>Email:<br>
+        <input type="email" name="email" placeholder="Ingresá tu correo" required />
+      </label><br><br>
+
+      <label>Dirección:<br>
+        <input type="text" name="direccion" placeholder="Ingresá tu dirección" />
+      </label><br><br>
+
+      <button type="submit">Finalizar compra</button>
+    </form>
+  `;
+
+  document.getElementById("formCompra").addEventListener("submit", function (e) {
+    e.preventDefault();
+    carrito = [];
+    localStorage.removeItem("carrito");
+
+    Swal.fire("¡Gracias por tu compra!", "Te llegará un mail con el detalle.", "success");
+    modelosDiv.innerHTML = "";
+    mostrarModelos();
+    mostrarCarrito();
+  });
 }
 
 function agregarAlCarrito(producto) {
