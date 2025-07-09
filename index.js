@@ -13,7 +13,7 @@ async function mostrarModelos() {
   zapatillas.forEach((zapatilla, i) => {
     const div = document.createElement("div");
     div.innerHTML = `
-    <img src="assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="imagen-modelo">
+    <img src="./assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="imagen-modelo">
       <p><strong>${zapatilla.nombre}</strong></p>
       <p>Precio: $${zapatilla.precio}</p>
       <p>Talles: ${zapatilla.talles.join(", ")}</p>
