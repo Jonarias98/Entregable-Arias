@@ -10,18 +10,31 @@ async function mostrarModelos() {
   const zapatillas = await obtenerProductos();
   modelosDiv.innerHTML = "";
 
-  zapatillas.forEach((zapatilla, i) => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-    <img src="./assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="imagen-modelo">
-      <p><strong>${zapatilla.nombre}</strong></p>
-      <p>Precio: $${zapatilla.precio}</p>
-      <p>Talles: ${zapatilla.talles.join(", ")}</p>
-      <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}">Agregar al carrito</button>
-    `;
-    modelosDiv.appendChild(div);
-  });
+zapatillas.forEach((zapatilla, i) => {
+  const div = document.createElement("div");
+  div.classList.add("col-md-4", "mb-4"); // Bootstrap grid para 3 columnas por fila
+
+  div.innerHTML = `
+    <div class="card h-100 text-center">
+      <img src="./assets/${zapatilla.imagen}" 
+           alt="${zapatilla.nombre}" 
+           class="card-img-top img-fluid"
+           style="max-height: 200px; object-fit: cover;">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <h5 class="card-title">${zapatilla.nombre}</h5>
+        <p class="card-text">Precio: $${zapatilla.precio}</p>
+        <p class="card-text">Talles: ${zapatilla.talles.join(", ")}</p>
+        <p class="card-text">${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
+        <button class="btn btn-primary mt-2" ${!zapatilla.stock ? "disabled" : ""} data-index="${i}">
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  `;
+
+  modelosDiv.appendChild(div);
+});
+
 
   const botones = modelosDiv.querySelectorAll("button");
   botones.forEach(btn => {
