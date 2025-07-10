@@ -12,14 +12,21 @@ async function mostrarModelos() {
 
   zapatillas.forEach((zapatilla, i) => {
     const div = document.createElement("div");
-    div.innerHTML = `
-      <img src="./assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="img-fluid rounded mx-auto d-block" style="max-width: 200px; height: auto;">
-      <p><strong>${zapatilla.nombre}</strong></p>
-      <p>Precio: $${zapatilla.precio}</p>
-      <p>Talles: ${zapatilla.talles.join(", ")}</p>
-      <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}" class="btn btn-success mt-2">Agregar al carrito</button>
-    `;
+div.innerHTML = `
+  <div class="card h-100 text-center">
+    <img src="./assets/${zapatilla.imagen}" class="card-img-top img-fluid p-3" alt="${zapatilla.nombre}">
+    <div class="card-body">
+      <h5 class="card-title">${zapatilla.nombre}</h5>
+      <p class="card-text">Precio: $${zapatilla.precio}</p>
+      <p class="card-text">Talles: ${zapatilla.talles.join(", ")}</p>
+      <p class="card-text">${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
+      <button ${!zapatilla.stock ? "disabled" : ""} class="btn btn-primary mt-2" data-index="${i}">
+        Agregar al carrito
+      </button>
+    </div>
+  </div>
+`;
+
     modelosDiv.appendChild(div);
   });
 
