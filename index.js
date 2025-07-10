@@ -12,21 +12,20 @@ async function mostrarModelos() {
 
   zapatillas.forEach((zapatilla, i) => {
     const div = document.createElement("div");
-div.innerHTML = `
-  <div class="card h-100 text-center">
-    <img src="./assets/${zapatilla.imagen}" class="card-img-top img-fluid p-3" alt="${zapatilla.nombre}">
-    <div class="card-body">
-      <h5 class="card-title">${zapatilla.nombre}</h5>
-      <p class="card-text">Precio: $${zapatilla.precio}</p>
-      <p class="card-text">Talles: ${zapatilla.talles.join(", ")}</p>
-      <p class="card-text">${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-      <button ${!zapatilla.stock ? "disabled" : ""} class="btn btn-primary mt-2" data-index="${i}">
-        Agregar al carrito
-      </button>
-    </div>
-  </div>
-`;
-
+    div.innerHTML = `
+      <div class="card h-100 text-center">
+        <img src="./assets/${zapatilla.imagen}" class="card-img-top img-fluid p-3" alt="${zapatilla.nombre}">
+        <div class="card-body">
+          <h5 class="card-title">${zapatilla.nombre}</h5>
+          <p class="card-text">Precio: $${zapatilla.precio}</p>
+          <p class="card-text">Talles: ${zapatilla.talles.join(", ")}</p>
+          <p class="card-text">${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
+          <button ${!zapatilla.stock ? "disabled" : ""} class="btn btn-primary mt-2" data-index="${i}">
+            Agregar al carrito
+          </button>
+        </div>
+      </div>
+    `;
     modelosDiv.appendChild(div);
   });
 
@@ -140,42 +139,44 @@ function mostrarFormulario() {
       <button type="button" id="cancelarFormularioBtn" class="btn btn-secondary ms-2">Cancelar</button>
     </form>
   `;
+
+  // ✅ Listeners deben estar dentro de mostrarFormulario
+  document.getElementById("formularioCompra").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const direccion = document.getElementById("direccion").value.trim();
+    const email = document.getElementById("email").value.trim();
+
+    const soloLetras = /^[a-zA-Z\s]+$/;
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!soloLetras.test(nombre)) {
+      alert("El nombre solo puede contener letras.");
+      return;
+    }
+
+    if (!soloLetras.test(apellido)) {
+      alert("El apellido solo puede contener letras.");
+      return;
+    }
+
+    if (direccion.length < 5) {
+      alert("La dirección debe tener al menos 5 caracteres.");
+      return;
+    }
+
+    if (!emailValido.test(email)) {
+      alert("Por favor, ingresá un correo electrónico válido.");
+      return;
+    }
+
+    mostrarResumenFinal(nombre, apellido, direccion, email);
+  });
+
+  document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
 }
-document.getElementById("formularioCompra").addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const nombre = document.getElementById("nombre").value.trim();
-  const apellido = document.getElementById("apellido").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
-  const email = document.getElementById("email").value.trim();
-
-  const soloLetras = /^[a-zA-Z\s]+$/;
-  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!soloLetras.test(nombre)) {
-    alert("El nombre solo puede contener letras.");
-    return;
-  }
-
-  if (!soloLetras.test(apellido)) {
-    alert("El apellido solo puede contener letras.");
-    return;
-  }
-
-  if (direccion.length < 5) {
-    alert("La dirección debe tener al menos 5 caracteres.");
-    return;
-  }
-
-  if (!emailValido.test(email)) {
-    alert("Por favor, ingresá un correo electrónico válido.");
-    return;
-  }
-
-  mostrarResumenFinal(nombre, apellido, direccion, email);
-});
-
-document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
 
 function mostrarResumenFinal(nombre, apellido, direccion, email) {
   const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
