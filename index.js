@@ -10,31 +10,19 @@ async function mostrarModelos() {
   const zapatillas = await obtenerProductos();
   modelosDiv.innerHTML = "";
 
-zapatillas.forEach((zapatilla, i) => {
-  const div = document.createElement("div");
-  div.classList.add("col-md-4", "mb-4"); // Bootstrap grid para 3 columnas por fila
-
-  div.innerHTML = `
-    <div class="card h-100 text-center">
-      <img src="./assets/${zapatilla.imagen}" 
-           alt="${zapatilla.nombre}" 
-           class="card-img-top img-fluid"
-           style="max-height: 200px; object-fit: cover;">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <h5 class="card-title">${zapatilla.nombre}</h5>
-        <p class="card-text">Precio: $${zapatilla.precio}</p>
-        <p class="card-text">Talles: ${zapatilla.talles.join(", ")}</p>
-        <p class="card-text">${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-        <button class="btn btn-primary mt-2" ${!zapatilla.stock ? "disabled" : ""} data-index="${i}">
-          Agregar al carrito
-        </button>
-      </div>
-    </div>
-  `;
-
-  modelosDiv.appendChild(div);
-});
-
+  zapatillas.forEach((zapatilla, i) => {
+    const div = document.createElement("div");
+    div.classList.add("col-md-4");
+    div.innerHTML = `
+      <img src="./assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="img-fluid rounded mx-auto d-block" style="max-width: 200px; height: auto;">
+      <p><strong>${zapatilla.nombre}</strong></p>
+      <p>Precio: $${zapatilla.precio}</p>
+      <p>Talles: ${zapatilla.talles.join(", ")}</p>
+      <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
+      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}" class="btn btn-primary">Agregar al carrito</button>
+    `;
+    modelosDiv.appendChild(div);
+  });
 
   const botones = modelosDiv.querySelectorAll("button");
   botones.forEach(btn => {
@@ -56,9 +44,10 @@ function mostrarCarrito() {
 
   carrito.forEach((item, index) => {
     const div = document.createElement("div");
+    div.classList.add("d-flex", "justify-content-between", "align-items-center", "mb-2");
     div.innerHTML = `
       <p><strong>${item.nombre}</strong> - $${item.precio}</p>
-      <button class="eliminarBtn">Eliminar</button>
+      <button class="eliminarBtn btn btn-sm btn-danger">Eliminar</button>
     `;
 
     const eliminarBtn = div.querySelector(".eliminarBtn");
@@ -69,60 +58,74 @@ function mostrarCarrito() {
     carritoDiv.appendChild(div);
   });
 
-  if (carrito.length > 0) {
-    const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
+  const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
 
-    const totalDiv = document.createElement("div");
-    totalDiv.innerHTML = `<p><strong>Total:</strong> $${total}</p>
-      <button id="comprarBtn">COMPRAR</button>`;
-    carritoDiv.appendChild(totalDiv);
+  const totalDiv = document.createElement("div");
+  totalDiv.classList.add("mt-3");
+  totalDiv.innerHTML = `
+    <p><strong>Total:</strong> $${total}</p>
+    <button id="comprarBtn" class="btn btn-success">COMPRAR</button>
+  `;
+  carritoDiv.appendChild(totalDiv);
 
-    document.getElementById("comprarBtn").addEventListener("click", () => {
-      Swal.fire({
-        title: "¿Confirmar compra?",
-        text: `Total a pagar: $${total}`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Continuar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          mostrarFormularioCompra();
-        }
-      });
-    });
-  }
+  document.getElementById("comprarBtn").addEventListener("click", mostrarResumenCompra);
 }
 
-function mostrarFormularioCompra() {
+function mostrarResumenCompra() {
   carritoDiv.innerHTML = `
-    <h3>Datos del comprador</h3>
-    <form id="formCompra">
-      <label>Nombre y apellido:<br>
-        <input type="text" name="nombre" placeholder="Ingresá tu nombre y apellido" required />
-      </label><br><br>
+    <h3>Resumen de compra</h3>
+    <ul>
+      ${carrito.map(item => `<li>${item.nombre} - $${item.precio}</li>`).join('')}
+    </ul>
+    <p><strong>Total a pagar:</strong> $${carrito.reduce((acc, prod) => acc + prod.precio, 0)}</p>
+    <button id="confirmarCompraBtn" class="btn btn-primary">Confirmar compra</button>
+    <button id="cancelarCompraBtn" class="btn btn-secondary ms-2">Cancelar</button>
+  `;
 
-      <label>Email:<br>
-        <input type="email" name="email" placeholder="Ingresá tu correo" required />
-      </label><br><br>
+  document.getElementById("confirmarCompraBtn").addEventListener("click", mostrarFormulario);
+  document.getElementById("cancelarCompraBtn").addEventListener("click", mostrarCarrito);
+}
 
-      <label>Dirección:<br>
-        <input type="text" name="direccion" placeholder="Ingresá tu dirección" />
-      </label><br><br>
-
-      <button type="submit">Finalizar compra</button>
+function mostrarFormulario() {
+  carritoDiv.innerHTML = `
+    <h3>Complete sus datos</h3>
+    <form id="formularioCompra">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" required />
+      </div>
+      <div class="mb-3">
+        <label for="apellido" class="form-label">Apellido</label>
+        <input type="text" class="form-control" id="apellido" required />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="email" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Finalizar compra</button>
+      <button type="button" id="cancelarFormularioBtn" class="btn btn-secondary ms-2">Cancelar</button>
     </form>
   `;
 
-  document.getElementById("formCompra").addEventListener("submit", function (e) {
+  document.getElementById("formularioCompra").addEventListener("submit", (e) => {
     e.preventDefault();
-    carrito = [];
-    localStorage.removeItem("carrito");
-
-    Swal.fire("¡Gracias por tu compra!", "Te llegará un mail con el detalle.", "success");
-    modelosDiv.innerHTML = "";
-    mostrarModelos();
-    mostrarCarrito();
+    finalizarCompra();
   });
+
+  document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
+}
+
+function finalizarCompra() {
+  Swal.fire({
+    icon: 'success',
+    title: '¡Gracias por tu compra!',
+    text: 'Te llegará un email con el detalle.',
+  });
+
+  carrito = [];
+  localStorage.removeItem("carrito");
+  mostrarCarrito();
+  mostrarModelos();
 }
 
 function agregarAlCarrito(producto) {
