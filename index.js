@@ -12,14 +12,13 @@ async function mostrarModelos() {
 
   zapatillas.forEach((zapatilla, i) => {
     const div = document.createElement("div");
-    div.classList.add("col-md-4");
     div.innerHTML = `
       <img src="./assets/${zapatilla.imagen}" alt="${zapatilla.nombre}" class="img-fluid rounded mx-auto d-block" style="max-width: 200px; height: auto;">
       <p><strong>${zapatilla.nombre}</strong></p>
       <p>Precio: $${zapatilla.precio}</p>
       <p>Talles: ${zapatilla.talles.join(", ")}</p>
       <p>Stock: ${zapatilla.stock ? "Disponible" : "Sin stock"}</p>
-      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}" class="btn btn-primary">Agregar al carrito</button>
+      <button ${!zapatilla.stock ? "disabled" : ""} data-index="${i}" class="btn btn-success mt-2">Agregar al carrito</button>
     `;
     modelosDiv.appendChild(div);
   });
@@ -44,10 +43,9 @@ function mostrarCarrito() {
 
   carrito.forEach((item, index) => {
     const div = document.createElement("div");
-    div.classList.add("d-flex", "justify-content-between", "align-items-center", "mb-2");
     div.innerHTML = `
       <p><strong>${item.nombre}</strong> - $${item.precio}</p>
-      <button class="eliminarBtn btn btn-sm btn-danger">Eliminar</button>
+      <button class="eliminarBtn btn btn-danger btn-sm mb-2">Eliminar</button>
     `;
 
     const eliminarBtn = div.querySelector(".eliminarBtn");
@@ -58,74 +56,20 @@ function mostrarCarrito() {
     carritoDiv.appendChild(div);
   });
 
-  const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
+  if (carrito.length > 0) {
+    const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
 
-  const totalDiv = document.createElement("div");
-  totalDiv.classList.add("mt-3");
-  totalDiv.innerHTML = `
-    <p><strong>Total:</strong> $${total}</p>
-    <button id="comprarBtn" class="btn btn-success">COMPRAR</button>
-  `;
-  carritoDiv.appendChild(totalDiv);
+    const totalDiv = document.createElement("div");
+    totalDiv.innerHTML = `
+      <p><strong>Total:</strong> $${total}</p>
+      <button id="comprarBtn" class="btn btn-primary mt-2">COMPRAR</button>
+    `;
+    carritoDiv.appendChild(totalDiv);
 
-  document.getElementById("comprarBtn").addEventListener("click", mostrarResumenCompra);
-}
-
-function mostrarResumenCompra() {
-  carritoDiv.innerHTML = `
-    <h3>Resumen de compra</h3>
-    <ul>
-      ${carrito.map(item => `<li>${item.nombre} - $${item.precio}</li>`).join('')}
-    </ul>
-    <p><strong>Total a pagar:</strong> $${carrito.reduce((acc, prod) => acc + prod.precio, 0)}</p>
-    <button id="confirmarCompraBtn" class="btn btn-primary">Confirmar compra</button>
-    <button id="cancelarCompraBtn" class="btn btn-secondary ms-2">Cancelar</button>
-  `;
-
-  document.getElementById("confirmarCompraBtn").addEventListener("click", mostrarFormulario);
-  document.getElementById("cancelarCompraBtn").addEventListener("click", mostrarCarrito);
-}
-
-function mostrarFormulario() {
-  carritoDiv.innerHTML = `
-    <h3>Complete sus datos</h3>
-    <form id="formularioCompra">
-      <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="nombre" required />
-      </div>
-      <div class="mb-3">
-        <label for="apellido" class="form-label">Apellido</label>
-        <input type="text" class="form-control" id="apellido" required />
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Correo electrónico</label>
-        <input type="email" class="form-control" id="email" required />
-      </div>
-      <button type="submit" class="btn btn-primary">Finalizar compra</button>
-      <button type="button" id="cancelarFormularioBtn" class="btn btn-secondary ms-2">Cancelar</button>
-    </form>
-  `;
-
-  document.getElementById("formularioCompra").addEventListener("submit", (e) => {
-    e.preventDefault();
-    finalizarCompra();
-  });
-
-  document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
-}
-
-function finalizarCompra() {
-  Swal.fire({
-    icon: 'success',
-    title: '¡Gracias por tu compra!',
-    text: 'Te llegará un email con el detalle.',
-  });
-
-  carrito = [];
-  localStorage.removeItem("carrito");
-  mostrarCarrito();
-  mostrarModelos();
+    document.getElementById("comprarBtn").addEventListener("click", () => {
+      mostrarFormulario();
+    });
+  }
 }
 
 function agregarAlCarrito(producto) {
@@ -163,6 +107,74 @@ function vaciarCarrito() {
       Swal.fire("Carrito vacío", "", "success");
     }
   });
+}
+
+function mostrarFormulario() {
+  carritoDiv.innerHTML = `
+    <h3>Complete sus datos</h3>
+    <form id="formularioCompra">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" required />
+      </div>
+      <div class="mb-3">
+        <label for="apellido" class="form-label">Apellido</label>
+        <input type="text" class="form-control" id="apellido" required />
+      </div>
+      <div class="mb-3">
+        <label for="direccion" class="form-label">Dirección de entrega</label>
+        <input type="text" class="form-control" id="direccion" required />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="email" required />
+      </div>
+      <button type="submit" class="btn btn-success">Continuar</button>
+      <button type="button" id="cancelarFormularioBtn" class="btn btn-secondary ms-2">Cancelar</button>
+    </form>
+  `;
+
+  document.getElementById("formularioCompra").addEventListener("submit", (e) => {
+    e.preventDefault();
+    mostrarResumenFinal();
+  });
+
+  document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
+}
+
+function mostrarResumenFinal() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const apellido = document.getElementById("apellido").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
+
+  carritoDiv.innerHTML = `
+    <h3>Resumen final</h3>
+    <p><strong>Nombre:</strong> ${nombre} ${apellido}</p>
+    <p><strong>Dirección:</strong> ${direccion}</p>
+    <p><strong>Correo:</strong> ${email}</p>
+    <p><strong>Cantidad de productos:</strong> ${carrito.length}</p>
+    <p><strong>Total a pagar:</strong> $${total}</p>
+    <p><strong>${nombre}</strong>, vas a comprar <strong>${carrito.length}</strong> zapatilla(s) por <strong>$${total}</strong> y te llegará a <strong>${direccion}</strong> en los próximos <strong>3 días hábiles</strong>.</p>
+    <button id="confirmarCompraFinalBtn" class="btn btn-success">Confirmar compra</button>
+    <button id="cancelarCompraFinalBtn" class="btn btn-secondary ms-2">Cancelar</button>
+  `;
+
+  document.getElementById("confirmarCompraFinalBtn").addEventListener("click", () => {
+    finalizarCompra();
+  });
+
+  document.getElementById("cancelarCompraFinalBtn").addEventListener("click", mostrarCarrito);
+}
+
+function finalizarCompra() {
+  carrito = [];
+  localStorage.removeItem("carrito");
+  mostrarCarrito();
+
+  Swal.fire("¡Gracias por tu compra!", "Te llegará un email con el detalle. ¡Que disfrutes tus zapatillas!", "success");
 }
 
 vaciarBtn.addEventListener("click", vaciarCarrito);
