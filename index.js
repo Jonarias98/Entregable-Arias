@@ -140,21 +140,44 @@ function mostrarFormulario() {
       <button type="button" id="cancelarFormularioBtn" class="btn btn-secondary ms-2">Cancelar</button>
     </form>
   `;
-
-  document.getElementById("formularioCompra").addEventListener("submit", (e) => {
-    e.preventDefault();
-    mostrarResumenFinal();
-  });
-
-  document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
 }
+document.getElementById("formularioCompra").addEventListener("submit", (e) => {
+  e.preventDefault();
 
-function mostrarResumenFinal() {
   const nombre = document.getElementById("nombre").value.trim();
   const apellido = document.getElementById("apellido").value.trim();
   const direccion = document.getElementById("direccion").value.trim();
   const email = document.getElementById("email").value.trim();
 
+  const soloLetras = /^[a-zA-Z\s]+$/;
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!soloLetras.test(nombre)) {
+    alert("El nombre solo puede contener letras.");
+    return;
+  }
+
+  if (!soloLetras.test(apellido)) {
+    alert("El apellido solo puede contener letras.");
+    return;
+  }
+
+  if (direccion.length < 5) {
+    alert("La dirección debe tener al menos 5 caracteres.");
+    return;
+  }
+
+  if (!emailValido.test(email)) {
+    alert("Por favor, ingresá un correo electrónico válido.");
+    return;
+  }
+
+  mostrarResumenFinal(nombre, apellido, direccion, email);
+});
+
+document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
+
+function mostrarResumenFinal(nombre, apellido, direccion, email) {
   const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
 
   carritoDiv.innerHTML = `
