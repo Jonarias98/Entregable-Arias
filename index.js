@@ -140,7 +140,7 @@ function mostrarFormulario() {
     </form>
   `;
 
-  // Event listener para el submit del formulario con validaciones
+  // VALIDACIÓN DEL FORMULARIO
   document.getElementById("formularioCompra").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -153,30 +153,30 @@ function mostrarFormulario() {
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!soloLetras.test(nombre)) {
-      alert("El nombre solo puede contener letras.");
+      Swal.fire("Error", "El nombre solo puede contener letras.", "error");
       return;
     }
 
     if (!soloLetras.test(apellido)) {
-      alert("El apellido solo puede contener letras.");
+      Swal.fire("Error", "El apellido solo puede contener letras.", "error");
       return;
     }
 
     if (direccion.length < 5) {
-      alert("La dirección debe tener al menos 5 caracteres.");
+      Swal.fire("Error", "La dirección debe tener al menos 5 caracteres.", "error");
       return;
     }
 
     if (!emailValido.test(email)) {
-      alert("Por favor, ingresá un correo electrónico válido.");
+      Swal.fire("Error", "Por favor, ingresá un correo electrónico válido.", "error");
       return;
     }
-
     mostrarResumenFinal(nombre, apellido, direccion, email);
   });
-  
+
   document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
 }
+
 
 function mostrarResumenFinal(nombre, apellido, direccion, email) {
   const total = carrito.reduce((acc, prod) => acc + prod.precio, 0);
