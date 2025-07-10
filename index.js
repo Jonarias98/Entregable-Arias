@@ -140,7 +140,7 @@ function mostrarFormulario() {
     </form>
   `;
 
-  // ✅ Listeners deben estar dentro de mostrarFormulario
+  // Event listener para el submit del formulario con validaciones
   document.getElementById("formularioCompra").addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -174,7 +174,7 @@ function mostrarFormulario() {
 
     mostrarResumenFinal(nombre, apellido, direccion, email);
   });
-
+  
   document.getElementById("cancelarFormularioBtn").addEventListener("click", mostrarCarrito);
 }
 
